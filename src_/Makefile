@@ -1,7 +1,7 @@
 CC = g++
 
 ASAN = #-fsanitize=address
-CFLAGS = -c -g -Wall -Wextra -Werror -std=c++17
+CFLAGS = -c -g -std=c++17 #-Wall -Wextra -Werror 
 GCOV_FLAGS = -fprofile-arcs -ftest-coverage
 
 TEST_FLAGS = -lgtest

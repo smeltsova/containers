@@ -80,6 +80,15 @@ class RBTree {
   bool areChildrenBlack(Node* node) const;
 
   void deleteNode(Node* node);
+
+  void transplant(Node* u, Node* v);
+  void deleteFixup(Node* x);
+
+ public:
+  // Constructor, Insertion, and other methods...
+
+  // Function to delete a node with a given key
+  void deleteNode(int key);
 };
 
 template <typename T, typename Compare>
@@ -549,7 +558,8 @@ void RBTree<T, Compare>::erase(iterator pos) {
   }
   helper(root_);
   replaceNodeInParent(node_to_delete, replacement);
-  std::cout << "\n" helper(root_);
+  std::cout << "\n";
+  helper(root_);
   deleteNode(node_to_delete);
   size_--;
 }
@@ -803,6 +813,95 @@ void RBTree<T, Compare>::handleCaseWithReplacementBlackNodeAndBlackReplacement(
 template <typename T, typename Compare>
 void RBTree<T, Compare>::deleteNode(Node* node) {
   if (node) delete node;
+}
+
+// Implement the deleteNode function
+template <typename T, typename Compare>
+void RBTree<T, Compare>::deleteNode(int key) {
+  Node* z = root_;
+  while (z != nullptr) {
+    if (key == z->data) {
+      break;
+    } else if (key < z->data) {
+      z = z->left;
+    } else {
+      z = z->right;
+    }
+  }
+
+  if (z == nullptr) {
+    // Node with the given key not found
+    return;
+  }
+
+  Node* y = z;
+  typename Node::Color y_original_color = y->color;
+  Node* x;
+
+  if (z->left == nullptr) {
+    std::cout << 1 << "\n";
+    x = z->right;
+    transplant(z, z->right);
+  } else if (z->right == nullptr) {
+    std::cout << 2 << "\n";
+
+    x = z->left;
+    transplant(z, z->left);
+  } else {
+    std::cout << 3 << "\n";
+
+    y = z->right;
+    while (y->left != nullptr) {
+      y = y->left;
+    }
+    y_original_color = y->color;
+    x = y->right;
+
+    if (y->parent == z) {
+      x->parent = y;
+    } else {
+      transplant(y, y->right);
+      y->right = z->right;
+      y->right->parent = y;
+    }
+
+    transplant(z, y);
+    y->left = z->left;
+    y->left->parent = y;
+    y->color = z->color;
+  }
+
+  if (y_original_color == Node::BLACK) {
+    std::cout << "fix"
+              << "\n";
+
+    deleteFixup(x);
+  }
+
+  delete z;
+}
+
+// Implement the transplant function (used in deleteNode)
+template <typename T, typename Compare>
+void RBTree<T, Compare>::transplant(Node* u, Node* v) {
+  if (u->parent == nullptr) {
+    root_ = v;
+  } else if (u == u->parent->left) {
+    u->parent->left = v;
+  } else {
+    u->parent->right = v;
+  }
+  if (v != nullptr) {
+    v->parent = u->parent;
+  }
+}
+
+// Implement the deleteFixup function (used in deleteNode)
+template <typename T, typename Compare>
+void RBTree<T, Compare>::deleteFixup(Node* x) {
+  // Implement the various cases (1 through 5) to restore Red-Black Tree
+  // properties This function is responsible for fixing the tree after a node
+  // deletion
 }
 
 }  // namespace s21
