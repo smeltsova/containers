@@ -17,7 +17,7 @@ TEST_OBJS:=$(addprefix $(TEST_OBJ_DIR)/, $(notdir $(TEST_SRC:.cc=.o)))
 LIB_SRC:=$(shell find . -maxdepth 1 -name "*.cc")
 LIB_OBJS:=$(LIB_SRC:.cc=.o)
 
-TARGET=s21_matrix_oop.a 
+TARGET= #s21_matrix_oop.a 
 
 LIB_OBJS_GCOV:=$(LIB_SRC:.cc=_gcov.o)
 

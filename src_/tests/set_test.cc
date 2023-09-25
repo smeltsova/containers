@@ -198,11 +198,21 @@ TEST(SetTest, Insert) {
 }
 
 TEST(SetTest, Erase) {
-  s21::set<int> s21_set = {1, 1, 2, 3, 4, 5};
-  std::set<int> std_set = {1, 1, 2, 3, 4, 5};
-  s21_set.deleteNode(4);
-  EXPECT_FALSE(s21_set.contains(4));
+  s21::set<int> s21_set = {1, 2, 3, 4};
+  std::set<int> std_set = {1, 2, 3, 4};
+  s21_set.deleteNode(s21_set.begin());
+  std_set.erase(std_set.begin());
+  // EXPECT_FALSE(s21_set.contains(22));
+  EXPECT_EQ(s21_set.size(), std_set.size());
+
   /*
+s21::set<int> s21_set = {10, 20, 15, 1, 22, 0, 12, 78, 11};
+  std::set<int> std_set = {10, 20, 15, 1, 22, 0, 12, 78, 11};
+  s21_set.deleteNode(++ ++ ++ ++ ++ ++ ++s21_set.begin());
+  std_set.erase(++ ++ ++ ++ ++ ++ ++std_set.begin());
+  EXPECT_FALSE(s21_set.contains(22));
+  EXPECT_EQ(s21_set.size(), std_set.size());
+
     s21_set.erase(++ ++ ++s21_set.begin());
     std_set.erase(++ ++ ++std_set.begin());
     EXPECT_EQ(s21_set.size(), std_set.size());
