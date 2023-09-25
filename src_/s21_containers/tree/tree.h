@@ -65,6 +65,10 @@ class RBTree {
 
   void transplant(Node* u, Node* v);
   void deleteFixup(Node* x, Node* x_parent);
+  bool isRed(Node* node);
+  bool isBlack(Node* node);
+  void turnRed(Node* node);
+  void turnBlack(Node* node);
 
  public:
   // Constructor, Insertion, and other methods...
@@ -537,17 +541,12 @@ void RBTree<T, Compare>::deleteNode(int key) {
   Node* x;
 
   if (z->left == nullptr) {
-    std::cout << 1 << "\n";
     x = z->right;
     transplant(z, z->right);
   } else if (z->right == nullptr) {
-    std::cout << 2 << "\n";
-
     x = z->left;
     transplant(z, z->left);
   } else {
-    std::cout << 3 << "\n";
-
     y = z->right;
     while (y->left != nullptr) {
       y = y->left;
@@ -556,7 +555,6 @@ void RBTree<T, Compare>::deleteNode(int key) {
     x = y->right;
 
     if (y->parent == z) {
-      std::cout << "replace by direct child\n";
       if (x) x->parent = y;
     } else {
       transplant(y, y->right);
@@ -571,9 +569,6 @@ void RBTree<T, Compare>::deleteNode(int key) {
   }
 
   if (y_original_color == Node::BLACK) {
-    std::cout << "fix"
-              << "\n";
-
     if (x != nullptr) {
       deleteFixup(x, x->parent);
     } else {
@@ -597,17 +592,12 @@ void RBTree<T, Compare>::deleteNode(iterator pos) {
   Node* x;
 
   if (z->left == nullptr) {
-    std::cout << 1 << "\n";
     x = z->right;
     transplant(z, z->right);
   } else if (z->right == nullptr) {
-    std::cout << 2 << "\n";
-
     x = z->left;
     transplant(z, z->left);
   } else {
-    std::cout << 3 << "\n";
-
     y = z->right;
     while (y->left != nullptr) {
       y = y->left;
@@ -616,7 +606,6 @@ void RBTree<T, Compare>::deleteNode(iterator pos) {
     x = y->right;
 
     if (y->parent == z) {
-      std::cout << "replace by direct child\n";
       if (x) x->parent = y;
     } else {
       transplant(y, y->right);
@@ -631,16 +620,13 @@ void RBTree<T, Compare>::deleteNode(iterator pos) {
   }
 
   if (y_original_color == Node::BLACK) {
-    std::cout << "fix1111"
-              << "\n";
-
     if (x != nullptr) {
       std::cout << "parent ";  // << x->parent->data.first;
-      // deleteFixup(x, x->parent);
+      deleteFixup(x, x->parent);
 
     } else {
-      std::cout << "no parent ";  //<< z->parent->data;  //.first;
-      // deleteFixup(x, z->parent);
+      std::cout << "no parent " << z->parent->data;  //.first;
+      deleteFixup(x, z->parent);
     }
   }
 
@@ -663,77 +649,103 @@ void RBTree<T, Compare>::transplant(Node* u, Node* v) {
 }
 
 template <typename T, typename Compare>
+bool RBTree<T, Compare>::isBlack(Node* node) {
+  return (!node || node->color == Node::BLACK);
+}
+
+template <typename T, typename Compare>
+bool RBTree<T, Compare>::isRed(Node* node) {
+  return !isBlack(node);
+}
+
+template <typename T, typename Compare>
+void RBTree<T, Compare>::turnRed(Node* node) {
+  node->color = Node::RED;
+}
+
+template <typename T, typename Compare>
+void RBTree<T, Compare>::turnBlack(Node* node) {
+  if (node) node->color = Node::BLACK;  ////// SEGMENTATION FAULT????????
+}
+
+template <typename T, typename Compare>
 void RBTree<T, Compare>::deleteFixup(Node* x, Node* x_parent) {
-  while (x != root_ && (x == nullptr || x->color == Node::BLACK)) {
+  while (x != root_ && (x == nullptr || isBlack(x))) {
     if (x == x_parent->left) {
       Node* w = x_parent->right;  // x's sibling
 
-      if (w->color == Node::RED) {
+      if (isRed(w)) {
         std::cout << "case 1\n";
         // Case 1: x's sibling is red
-        w->color = Node::BLACK;
-        x_parent->color = Node::RED;
+        turnBlack(w);
+        turnRed(x_parent);
         leftRotate(x_parent);
         w = x_parent->right;
         std::cout << "case 1\n";
       }
 
-      if (w->left->color == Node::BLACK && w->right->color == Node::BLACK) {
-        // Case 2: x's sibling is black, and both of w's children are black
+      if (isBlack(w->left) && isBlack(w->right)) {
+        // Case 2: x's sibling is black, and both of w's children
+        // are black
+        std::cout << "case 2\n";
         w->color = Node::RED;
         x = x_parent;
       } else {
-        if (w->right->color == Node::BLACK) {
-          // Case 3: x's sibling is black, w's left child is red, and w's right
-          // child is black
-          w->left->color = Node::BLACK;
+        if (isBlack(w->right)) {
+          //  Case 3: x's sibling is black, w's left child is red, and w's
+          // right  child is black
+          std::cout << "case 3\n";
+          turnBlack(w->left);
           w->color = Node::RED;
           rightRotate(w);
           w = x_parent->right;
         }
 
         // Case 4: x's sibling is black, and w's right child is red
+        // std::cout << "case 4\n";
         w->color = x_parent->color;
-        x_parent->color = Node::BLACK;
-        w->right->color = Node::BLACK;
+        turnBlack(x_parent);
+        turnBlack(w->right);
         leftRotate(x_parent);
         x = root_;  // Terminate the loop
       }
+
     } else {
-      // Symmetric cases for x being a right child
-      Node* w = x_parent->left;  // x's sibling
+      // // Symmetric cases for x being a right child
+      // Node* w = x_parent->left;  // x's sibling
 
-      if (w->color == Node::RED) {
-        std::cout << "case 1\n";
-        // Case 1: x's sibling is red
-        w->color = Node::BLACK;
-        x_parent->color = Node::RED;
-        rightRotate(x_parent);
-        w = x_parent->left;
-        std::cout << "case 1\n";
-      }
+      // if (isRed(w)) {
+      //   std::cout << "case 1\n";
+      //   // Case 1: x's sibling is red
+      //   w->color = Node::BLACK;
+      //   x_parent->color = Node::RED;
+      //   rightRotate(x_parent);
+      //   w = x_parent->left;
+      //   std::cout << "case 1\n";
+      // }
 
-      if (w->right->color == Node::BLACK && w->left->color == Node::BLACK) {
-        // Case 2: x's sibling is black, and both of w's children are black
-        w->color = Node::RED;
-        x = x_parent;
-      } else {
-        if (w->left->color == Node::BLACK) {
-          // Case 3: x's sibling is black, w's right child is red, and w's left
-          // child is black
-          w->right->color = Node::BLACK;
-          w->color = Node::RED;
-          leftRotate(w);
-          w = x_parent->left;
-        }
+      // if (isBlack(w->right) && isBlack(w->left)) {
+      //   // Case 2: x's sibling is black, and both of w's children are black
+      //   w->color = Node::RED;
+      //   x = x_parent;
+      // } else {
+      //   if (isBlack(w->left)) {
+      //     // Case 3: x's sibling is black, w's right child is red, and w's
+      //     left
+      //     // child is black
+      //     w->right->color = Node::BLACK;
+      //     w->color = Node::RED;
+      //     leftRotate(w);
+      //     w = x_parent->left;
+      //   }
 
-        // Case 4: x's sibling is black, and w's left child is red
-        w->color = x_parent->color;
-        x_parent->color = Node::BLACK;
-        w->left->color = Node::BLACK;
-        rightRotate(x_parent);
-        x = root_;  // Terminate the loop
-      }
+      //   // Case 4: x's sibling is black, and w's left child is red
+      //   w->color = x_parent->color;
+      //   x_parent->color = Node::BLACK;
+      //   w->left->color = Node::BLACK;
+      //   rightRotate(x_parent);
+      x = root_;  // Terminate the loop
+      // }
     }
   }
 

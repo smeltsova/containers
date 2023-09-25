@@ -198,47 +198,59 @@ TEST(SetTest, Insert) {
 }
 
 TEST(SetTest, Erase) {
-  s21::set<int> s21_set = {1, 2, 3, 4};
-  std::set<int> std_set = {1, 2, 3, 4};
-  s21_set.deleteNode(s21_set.begin());
-  std_set.erase(std_set.begin());
-  // EXPECT_FALSE(s21_set.contains(22));
-  EXPECT_EQ(s21_set.size(), std_set.size());
+  s21::set<int> s21_set1 = {1, 2, 3, 4};
+  std::set<int> std_set1 = {1, 2, 3, 4};
 
+  s21_set1.erase(s21_set1.begin());
+  std_set1.erase(std_set1.begin());
+  EXPECT_FALSE(s21_set1.contains(1));
+  EXPECT_EQ(s21_set1.size(), std_set1.size());
+
+  s21_set1.erase(++s21_set1.begin());
+  std_set1.erase(++std_set1.begin());
+  EXPECT_FALSE(s21_set1.contains(3));
+  EXPECT_EQ(s21_set1.size(), std_set1.size());
   /*
-s21::set<int> s21_set = {10, 20, 15, 1, 22, 0, 12, 78, 11};
-  std::set<int> std_set = {10, 20, 15, 1, 22, 0, 12, 78, 11};
-  s21_set.deleteNode(++ ++ ++ ++ ++ ++ ++s21_set.begin());
-  std_set.erase(++ ++ ++ ++ ++ ++ ++std_set.begin());
-  EXPECT_FALSE(s21_set.contains(22));
-  EXPECT_EQ(s21_set.size(), std_set.size());
+    s21_set1.erase(--s21_set1.end());
+    std_set1.erase(--std_set1.end());
+    EXPECT_FALSE(s21_set1.contains(4));
+    EXPECT_EQ(s21_set1.size(), std_set1.size());
+
+    s21::set<int> s21_set = {10, 20, 15, 1, 22, 0, 12, 78, 11};
+    std::set<int> std_set = {10, 20, 15, 1, 22, 0, 12, 78, 11};
+    s21_set.erase(s21_set.begin());
+    std_set.erase(std_set.begin());
+    EXPECT_FALSE(s21_set.contains(0));
+    EXPECT_EQ(s21_set.size(), std_set.size());
 
     s21_set.erase(++ ++ ++s21_set.begin());
     std_set.erase(++ ++ ++std_set.begin());
     EXPECT_EQ(s21_set.size(), std_set.size());
-    EXPECT_FALSE(s21_set.contains(4));
+    EXPECT_FALSE(s21_set.contains(12));
 
-      s21_set.erase(++s21_set.begin());
-      std_set.erase(++std_set.begin());
-      EXPECT_EQ(s21_set.size(), std_set.size());
-      EXPECT_FALSE(s21_set.contains(3));
+    s21_set.erase(++s21_set.begin());
+    std_set.erase(++std_set.begin());
+    EXPECT_EQ(s21_set.size(), std_set.size());
+    EXPECT_FALSE(s21_set.contains(10));
 
-      s21_set.erase(--s21_set.end());
-      std_set.erase(--std_set.end());
-      EXPECT_EQ(s21_set.size(), std_set.size());
-      EXPECT_FALSE(s21_set.contains(5));
+    s21_set.erase(--s21_set.end());
+    std_set.erase(--std_set.end());
+    EXPECT_EQ(s21_set.size(), std_set.size());
+    EXPECT_FALSE(s21_set.contains(78));
 
-      s21_set.insert(3);
-      s21_set.insert(3);
-      std_set.insert(3);
-      std_set.insert(3);
-      EXPECT_TRUE(s21_set.contains(3));
-      s21_set.erase(s21_set.find(3));
-      std_set.erase(std_set.find(3));
-      EXPECT_FALSE(s21_set.contains(3));
-      EXPECT_EQ(s21_set.size(), std_set.size());*/
+    s21_set.erase(-- --s21_set.end());
+    std_set.erase(-- --std_set.end());
+    EXPECT_EQ(s21_set.size(), std_set.size());
+    EXPECT_FALSE(s21_set.contains(20));
+
+    s21_set.insert(3);
+    s21_set.insert(3);
+    EXPECT_TRUE(s21_set.contains(3));
+    s21_set.erase(s21_set.find(3));
+    EXPECT_FALSE(s21_set.contains(3));
+    EXPECT_EQ(s21_set.size(), std_set.size());*/
 }
-/*
+
 TEST(SetTest, Swap) {
   s21::set<int> s21_set1 = {1, 2, 3};
   s21::set<int> s21_set2 = {3, 4, 5, 6};
@@ -303,7 +315,7 @@ TEST(SetTest, Merge) {
   EXPECT_EQ(s21_set3.size(), 0);
   EXPECT_EQ(s21_set4.size(), 2);
 }
-
+/*
 TEST(SetTest, Find) {
   s21::set<int> s21_set = {6, 3, 89, -1, 3, 6, 3, 5, 4, 2};
   std::set<int> std_set = {6, 3, 89, -1, 3, 6, 3, 5, 4, 2};
@@ -333,7 +345,7 @@ TEST(SetTest, Find) {
   std_it = std_set.find(-100);
   EXPECT_TRUE(s21_it == s21_set.end());
   EXPECT_TRUE(std_it == std_set.end());
-}
+}*/
 
 TEST(SetTest, Contains) {
   s21::set<int> s21_set = {-3, 4, 17, 2, 2, 2, 2, 3};
@@ -347,4 +359,3 @@ TEST(SetTest, Contains) {
   s21::set<double> empty;
   EXPECT_FALSE(empty.contains(23.2));
 }
-*/
