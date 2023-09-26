@@ -278,6 +278,7 @@ void RBTree<T, Compare>::deleteTree(Node* node) {
 template <typename T, typename Compare>
 void RBTree<T, Compare>::helper(Node* node) {
   if (node) {
+    // std::cout << node->data << "helper\n";
     helper(node->left);
     helper(node->right);
   }
@@ -590,6 +591,8 @@ void RBTree<T, Compare>::deleteNode(iterator pos) {
   Node* y = z;
   typename Node::Color y_original_color = y->color;
   Node* x;
+  std::cout << "delete node started \n"
+            << (y_original_color == Node::BLACK ? 1 : 0);
 
   if (z->left == nullptr) {
     x = z->right;
@@ -619,19 +622,22 @@ void RBTree<T, Compare>::deleteNode(iterator pos) {
     y->color = z->color;
   }
 
+  std::cout << "delete node finshed "
+            << (y_original_color == Node::BLACK ? 1 : 0) << "\n";
   if (y_original_color == Node::BLACK) {
     if (x != nullptr) {
       std::cout << "parent ";  // << x->parent->data.first;
       deleteFixup(x, x->parent);
 
-    } else {
-      std::cout << "no parent " << z->parent->data;  //.first;
+    } else if (z->parent) {
+      std::cout << "no parent ";  // << z->parent->data;  //.first;
       deleteFixup(x, z->parent);
     }
   }
 
   delete z;
   --size_;
+  helper(root_);
 }
 
 template <typename T, typename Compare>
